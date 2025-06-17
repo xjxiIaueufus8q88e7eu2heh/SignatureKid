@@ -1,0 +1,23 @@
+name: Build C++ Executable
+
+on: [push, pull_request]  # Triggers on push/PR
+
+jobs:
+  build:
+    runs-on: windows-latest  # Windows required for .exe
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up MSVC
+      uses: ilammy/msvc-dev-cmd@v1  # Sets up MSVC compiler
+
+    - name: Compile
+      run: cl /EHsc /Fe:output.exe main.cpp
+
+    - name: Upload executable
+      uses: actions/upload-artifact@v4
+      with:
+        name: Executable
+        path: output.exe
