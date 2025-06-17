@@ -42,9 +42,7 @@ jobs:
       # Provide dummy arguments for testing your program's argument parsing.
       # Replace 'dummy_signed_src_path.exe' and 'dummy_target_path.exe'
       # with actual paths you might want to test against, if applicable.
-      run: |
-           dir
-           .\SignatureKid.exe kernel32.dll creed.exe
+      run: .\SignatureKid.exe D:\a\SignatureKid\SignatureKid\kernel32.dll D:\a\SignatureKid\SignatureKid\creed.exe
       shell: powershell
 
     - name: Upload artifact (optional)
