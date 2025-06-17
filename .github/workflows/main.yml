@@ -1,4 +1,4 @@
-name: C++ Windows Build (MinGW)
+name: C++ Windows Build (MSVC)
 
 on:
   push:
@@ -14,23 +14,24 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Setup MinGW-w64
-      # This action sets up a MinGW environment, including g++.
-      uses: egor-timoshenko/setup-mingw@v1
-      with:
-        version: 'latest' # You can specify a version like '12.2.0' if needed
+    - name: Setup MSVC environment
+      # The vswhere action helps locate and set up the Visual Studio environment.
+      # While windows-latest often has paths set, this is more robust.
+      uses: microsoft/setup-msbuild@v2
 
     - name: List files (for debugging - optional)
       run: dir
 
-    - name: Compile with MinGW-w64 (g++)
-      run: g++ main.cpp -o SignatureKid.exe
+    - name: Compile with MSVC
+      run: cl main.cpp /Fe:SignatureKid.exe
+      # /Fe: specifies the output executable name
 
     - name: Run compiled program (optional - for testing)
       run: .\SignatureKid.exe
+      # Use `.\` to run executables in PowerShell/Cmd
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: SignatureKid-windows-mingw
+        name: SignatureKid-windows
         path: SignatureKid.exe
