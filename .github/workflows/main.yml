@@ -1,43 +1,36 @@
-name: Build on Windows (MinGW)
+name: C++ Windows Build (MinGW)
 
 on:
   push:
-    branches:
-      - main # Trigger on pushes to the main branch
+    branches: [ main ]
   pull_request:
-    branches:
-      - main # Trigger on pull requests to the main branch
+    branches: [ main ]
 
 jobs:
-  build-windows-mingw:
-    runs-on: windows-latest # Use the latest Windows runner
+  build:
+    runs-on: windows-latest
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4 # Action to check out your code
+      uses: actions/checkout@v4
 
-    - name: Set up MinGW
-      # This action installs MinGW-w64 on the runner and adds it to PATH.
-      uses: egor-tensin/setup-mingw@v2
+    - name: Setup MinGW-w64
+      # This action sets up a MinGW environment, including g++.
+      uses: egor-timoshenko/setup-mingw@v1
       with:
-        platform: x64 # Install the 64-bit toolchain
+        version: 'latest' # You can specify a version like '12.2.0' if needed
 
-    - name: Compile C++ code
-      run: |
-        # Use g++ to compile your main.cpp
-        # The compiler will automatically find steal.h
-        g++ main.cpp -o SignatureKid.exe
-      shell: bash # Using bash shell for consistent commands
+    - name: List files (for debugging - optional)
+      run: dir
 
-    - name: Run compiled executable (optional)
-      # This step is just to verify the executable works
-      run: ./SignatureKid.exe
-      shell: bash
+    - name: Compile with MinGW-w64 (g++)
+      run: g++ main.cpp -o SignatureKid.exe
 
-    - name: Upload artifact (optional)
-      # This step uploads the compiled executable as a workflow artifact,
-      # which you can download from the GitHub Actions run summary.
+    - name: Run compiled program (optional - for testing)
+      run: .\SignatureKid.exe
+
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: SignatureKid-Windows-MinGW
+        name: SignatureKid-windows-mingw
         path: SignatureKid.exe
