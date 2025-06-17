@@ -10,29 +10,23 @@ on:
 
 jobs:
   build-windows-mingw:
-    runs-on: windows-latest # Use the latest Windows runner
+    runs-on: windows-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
     - name: Set up MSYS2 and Install MinGW-w64 toolchain
-      # Use a direct approach to interact with MSYS2.
-      # The GitHub Actions Windows runners typically have MSYS2 pre-installed.
-      # We need to run pacman commands inside its environment.
       run: |
-        # Update MSYS2 packages
         C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
-        # Install the MinGW-w64 toolchain
         C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain"
-      shell: powershell # Use PowerShell to execute the bash commands within MSYS2
+      shell: powershell
 
     - name: Add MinGW to PATH
-      # The MinGW tools are typically found in C:\msys64\mingw64\bin after installation
       run: |
         $env:Path += ";C:\msys64\mingw64\bin"
         echo "C:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      shell: powershell # Use PowerShell for Windows path manipulation
+      shell: powershell
 
     - name: Verify g++ is available (optional)
       run: g++ --version
@@ -41,10 +35,16 @@ jobs:
     - name: Compile C++ code
       run: |
         g++ main.cpp -o SignatureKid.exe
-      shell: powershell # Use PowerShell for compilation
+      shell: powershell
 
     - name: Run compiled executable (optional)
-      run: .\SignatureKid.exe
+      # *** IMPORTANT CHANGE HERE ***
+      # Provide dummy arguments for testing your program's argument parsing.
+      # Replace 'dummy_signed_src_path.exe' and 'dummy_target_path.exe'
+      # with actual paths you might want to test against, if applicable.
+      run: |
+           dir
+           .\SignatureKid.exe "C:\Path\To\Some\SignedFile.exe" "C:\Path\To\Target\Destination.cer"
       shell: powershell
 
     - name: Upload artifact (optional)
