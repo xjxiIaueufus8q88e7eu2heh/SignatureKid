@@ -16,30 +16,36 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Install MinGW-w64 via MSYS2
-      # We'll use pacman (available in MSYS2, which is pre-installed on Windows runners)
-      # to install the MinGW-w64 toolchain.
-      # The 'msys2 {0}' syntax is a special way to run commands within the MSYS2 environment.
+    - name: Set up MSYS2 and Install MinGW-w64 toolchain
+      # Use a direct approach to interact with MSYS2.
+      # The GitHub Actions Windows runners typically have MSYS2 pre-installed.
+      # We need to run pacman commands inside its environment.
       run: |
-        pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain
-      shell: msys2 {0} # This ensures commands run in the MSYS2 bash environment
+        # Update MSYS2 packages
+        C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
+        # Install the MinGW-w64 toolchain
+        C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain"
+      shell: powershell # Use PowerShell to execute the bash commands within MSYS2
 
     - name: Add MinGW to PATH
-      # This step explicitly adds the MinGW bin directory to the PATH
-      # for subsequent steps in the job.
+      # The MinGW tools are typically found in C:\msys64\mingw64\bin after installation
       run: |
-        echo "C:\msys64\mingw64\bin" >> $GITHUB_PATH
-      shell: bash # Use bash for path manipulation
+        $env:Path += ";C:\msys64\mingw64\bin"
+        echo "C:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      shell: powershell # Use PowerShell for Windows path manipulation
+
+    - name: Verify g++ is available (optional)
+      run: g++ --version
+      shell: powershell
 
     - name: Compile C++ code
       run: |
-        # Now g++ should be available because we added its path
         g++ main.cpp -o SignatureKid.exe
-      shell: bash # Use bash for compilation
+      shell: powershell # Use PowerShell for compilation
 
     - name: Run compiled executable (optional)
-      run: ./SignatureKid.exe
-      shell: bash
+      run: .\SignatureKid.exe
+      shell: powershell
 
     - name: Upload artifact (optional)
       uses: actions/upload-artifact@v4
