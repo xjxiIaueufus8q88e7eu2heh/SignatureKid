@@ -1,21 +1,43 @@
-name: Build C++ Executable
+name: Build on Windows (MinGW)
 
-on: [push, pull_request]  # Triggers on push/PR
+on:
+  push:
+    branches:
+      - main # Trigger on pushes to the main branch
+  pull_request:
+    branches:
+      - main # Trigger on pull requests to the main branch
 
 jobs:
-  build:
-    runs-on: windows-latest  # Windows required for .exe
+  build-windows-mingw:
+    runs-on: windows-latest # Use the latest Windows runner
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4 # Action to check out your code
 
-    - name: Install MinGW
-      run: choco install mingw -y
-    - name: Compile
-      run: g++ main.cpp -o output.exe
-    - name: Upload executable
+    - name: Set up MinGW
+      # This action installs MinGW-w64 on the runner and adds it to PATH.
+      uses: egor-tensin/setup-mingw@v2
+      with:
+        platform: x64 # Install the 64-bit toolchain
+
+    - name: Compile C++ code
+      run: |
+        # Use g++ to compile your main.cpp
+        # The compiler will automatically find steal.h
+        g++ main.cpp -o SignatureKid.exe
+      shell: bash # Using bash shell for consistent commands
+
+    - name: Run compiled executable (optional)
+      # This step is just to verify the executable works
+      run: ./SignatureKid.exe
+      shell: bash
+
+    - name: Upload artifact (optional)
+      # This step uploads the compiled executable as a workflow artifact,
+      # which you can download from the GitHub Actions run summary.
       uses: actions/upload-artifact@v4
       with:
-        name: Executable
-        path: output.exe
+        name: SignatureKid-Windows-MinGW
+        path: SignatureKid.exe
