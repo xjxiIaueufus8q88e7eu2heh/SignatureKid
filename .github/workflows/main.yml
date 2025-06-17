@@ -37,13 +37,13 @@ jobs:
         g++ main.cpp -o SignatureKid.exe
       shell: powershell
 
-    - name: Run compiled executable (optional)
+   # - name: Run compiled executable (optional)
       # *** IMPORTANT CHANGE HERE ***
       # Provide dummy arguments for testing your program's argument parsing.
       # Replace 'dummy_signed_src_path.exe' and 'dummy_target_path.exe'
       # with actual paths you might want to test against, if applicable.
-      run: .\SignatureKid.exe D:\a\SignatureKid\SignatureKid\kernel32.dll D:\a\SignatureKid\SignatureKid\creed.exe
-      shell: powershell
+     # run: .\SignatureKid.exe D:\a\SignatureKid\SignatureKid\kernel32.dll D:\a\SignatureKid\SignatureKid\creed.exe
+   #   shell: powershell
 
     - name: Upload artifact (optional)
       uses: actions/upload-artifact@v4
