@@ -10,12 +10,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up MSVC
-      uses: ilammy/msvc-dev-cmd@v1  # Sets up MSVC compiler
-
+    - name: Install MinGW
+      run: choco install mingw -y
     - name: Compile
-      run: cl /EHsc /Fe:output.exe main.cpp
-
+      run: g++ main.cpp -o output.exe
     - name: Upload executable
       uses: actions/upload-artifact@v4
       with:
