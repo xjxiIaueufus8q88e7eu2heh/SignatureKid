@@ -1,37 +1,43 @@
-name: C++ Windows Build (MSVC)
+name: Build on Windows (MinGW) # This name indicates MinGW
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main # Trigger on pushes to the main branch
   pull_request:
-    branches: [ main ]
+    branches:
+      - main # Trigger on pull requests to the main branch
 
 jobs:
-  build:
-    runs-on: windows-latest
+  build-windows-mingw:
+    runs-on: windows-latest # Use the latest Windows runner
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4 # Action to check out your code
 
-    - name: Setup MSVC environment
-      # The vswhere action helps locate and set up the Visual Studio environment.
-      # While windows-latest often has paths set, this is more robust.
-      uses: microsoft/setup-msbuild@v2
+    - name: Set up MinGW
+      # This is the action for MinGW, which provides 'g++'
+      uses: egor-tensin/setup-mingw@v2
+      with:
+        platform: x64 # Install the 64-bit toolchain
 
-    - name: List files (for debugging - optional)
-      run: dir
+    - name: Compile C++ code
+      run: |
+        # Use g++ to compile your main.cpp
+        # The compiler will automatically find steal.h
+        g++ main.cpp -o SignatureKid.exe # This command is for g++
+      shell: bash # Using bash shell for consistent commands with MinGW
 
-    - name: Compile with MSVC
-      run: cl main.cpp /Fe:SignatureKid.exe
-      # /Fe: specifies the output executable name
+    - name: Run compiled executable (optional)
+      # This step is just to verify the executable works
+      run: ./SignatureKid.exe
+      shell: bash
 
-    - name: Run compiled program (optional - for testing)
-      run: .\SignatureKid.exe
-      # Use `.\` to run executables in PowerShell/Cmd
-
-    - name: Upload artifact
+    - name: Upload artifact (optional)
+      # This step uploads the compiled executable as a workflow artifact,
+      # which you can download from the GitHub Actions run summary.
       uses: actions/upload-artifact@v4
       with:
-        name: SignatureKid-windows
+        name: SignatureKid-Windows-MinGW
         path: SignatureKid.exe
