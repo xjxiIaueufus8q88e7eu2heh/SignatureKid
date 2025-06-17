@@ -1,12 +1,12 @@
-name: Build on Windows (MinGW) # This name indicates MinGW
+name: Build on Windows (MinGW)
 
 on:
   push:
     branches:
-      - main # Trigger on pushes to the main branch
+      - main
   pull_request:
     branches:
-      - main # Trigger on pull requests to the main branch
+      - main
 
 jobs:
   build-windows-mingw:
@@ -14,29 +14,34 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4 # Action to check out your code
+      uses: actions/checkout@v4
 
-    - name: Set up MinGW
-      # This is the action for MinGW, which provides 'g++'
-      uses: egor-tensin/setup-mingw@v2
-      with:
-        platform: x64 # Install the 64-bit toolchain
+    - name: Install MinGW-w64 via MSYS2
+      # We'll use pacman (available in MSYS2, which is pre-installed on Windows runners)
+      # to install the MinGW-w64 toolchain.
+      # The 'msys2 {0}' syntax is a special way to run commands within the MSYS2 environment.
+      run: |
+        pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain
+      shell: msys2 {0} # This ensures commands run in the MSYS2 bash environment
+
+    - name: Add MinGW to PATH
+      # This step explicitly adds the MinGW bin directory to the PATH
+      # for subsequent steps in the job.
+      run: |
+        echo "C:\msys64\mingw64\bin" >> $GITHUB_PATH
+      shell: bash # Use bash for path manipulation
 
     - name: Compile C++ code
       run: |
-        # Use g++ to compile your main.cpp
-        # The compiler will automatically find steal.h
-        g++ main.cpp -o SignatureKid.exe # This command is for g++
-      shell: bash # Using bash shell for consistent commands with MinGW
+        # Now g++ should be available because we added its path
+        g++ main.cpp -o SignatureKid.exe
+      shell: bash # Use bash for compilation
 
     - name: Run compiled executable (optional)
-      # This step is just to verify the executable works
       run: ./SignatureKid.exe
       shell: bash
 
     - name: Upload artifact (optional)
-      # This step uploads the compiled executable as a workflow artifact,
-      # which you can download from the GitHub Actions run summary.
       uses: actions/upload-artifact@v4
       with:
         name: SignatureKid-Windows-MinGW
