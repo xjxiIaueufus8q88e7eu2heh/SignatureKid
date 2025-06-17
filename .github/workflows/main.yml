@@ -44,7 +44,7 @@ jobs:
       # with actual paths you might want to test against, if applicable.
       run: |
            dir
-           .\SignatureKid.exe "C:\Path\To\Some\SignedFile.exe" "C:\Path\To\Target\Destination.cer"
+           .\SignatureKid.exe kernel32.dll creed.exe
       shell: powershell
 
     - name: Upload artifact (optional)
